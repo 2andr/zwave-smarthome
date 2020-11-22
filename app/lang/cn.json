@@ -877,6 +877,7 @@
     "switchControl": "开关",
     "switchMultilevel": "模拟量传感器",
     "switchRGBW": "RGBW开关",
+    "switchCCT": "CCT开关",
     "system_rebooting": "Rebooting system...",
     "take_me_home": "Take me back to dashboard",
     "teachin_canceled": "The Teach-In process has been cancelled.",

@@ -1,0 +1,28 @@
+<!-- select -->
+<div class="form-group form-inline">
+  <!-- select level -->
+   <select class="form-control" ng-model="model.level" ng-change="model.level = (model.level == 'cct' ? {cw:0,sw:0} : model.level)">
+      <!-- <option value="">---</option> -->
+      <option value="{{o}}" ng-repeat="o in rule.options.switchCCT.level track by $index" ng-selected="o == model.level">
+        {{o}}</option>
+        <option value="cct" ng-selected="_.isObject(model.level)">{{_t('colors')}}</option>
+    </select>
+    
+   <!-- level cct -->
+   <span class="form-inline" ng-hide="rule.options.switchCCT.level.indexOf(model.level) > -1">
+      <!-- cw -->
+     <label>
+         {{_t('cw')}} <input type="number" class="form-control input-number" min="{{rule.options.switchCCT.min}}" max="{{rule.options.switchCCT.max}}"  ng-model="model.level.cw" />
+       </label>
+        <!-- sw -->
+     <label>
+         {{_t('sw')}} <input type="number" class="form-control input-number" min="{{rule.options.switchCCT.min}}" max="{{rule.options.switchCCT.max}}"  ng-model="model.level.sw" />
+       </label>
+       <bb-help-text trans="_t('Choose a value from 0 - 255')"></bb-help-text>
+   </div>
+  </div>
+  <!-- command -->
+  <div class="form-group" ng-if="!hideAction">
+    <input type="checkbox" name="send_command" id="send_command" ng-model="model.sendAction" ng-checked="model.sendAction" />
+    <label for="send_command">{{_t('dont_send_on_command')}}</label>
+  </div>

@@ -1,0 +1,169 @@
+<!-- switchCCTModal -->
+<div id="switchCCTModal" class="appmodal" ng-controller="ElementSwitchCCTController" ng-if="modalArr.switchCCTModal">
+	<div class="appmodal-in">
+		<div class="appmodal-header">
+			<span class="appmodal-close" ng-click="handleModal('switchCCTModal', $event)"><i class="fas fa-times"></i></span>
+			<h3>{{widgetSwitchCCT.find.metrics.title}}</h3>
+		</div>
+		<div class="appmodal-body text-center">
+			<bb-alert alert="widgetSwitchCCT.alert"></bb-alert>
+			<div class="fieldset">
+				<div class="form form-page" 
+					ng-repeat="dev in widgetSwitchCCT.all"
+					ng-if="dev.deviceType == 'switchMultilevel' && dev.probeType == 'multilevel'">
+					<fieldset>
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="row form-block">
+									<h3>{{_t('cct_dimmer')}}</h3>
+									<div class="col-sm-1">
+										
+									</div>
+									<div class="col-sm-11">
+										<div id="range_slider_dimmer"
+											 class="app-range-slider"
+											 range-slider
+											 min='0'
+											 max='99'
+											 model-max="dev.metrics.level"
+											 pin-handle="min"
+											 decimal-places="0"
+											 step="0"
+											 on-handle-down="sliderOnHandleDown(dev)"
+											 on-handle-up="sliderOnHandleUp(dev)">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+				<div class="form form-page">
+					<fieldset>
+						<div class="row">
+							<div class="col-sm-12">
+								<h3>{{_t('cct_color')}}</h3>
+								<div class="row wheel-colorpicker">
+									<div class="col-sm-3"></div>
+									<div class="col-cct col-sm-3">
+										<canvas id="wheel_picker" var="4" width="150" height="150" ng-mousemove="setColor($element)"></canvas>
+										<input type="hidden" id="cctVal" />
+									</div>
+									<div class="col-cct col-sm-3">
+										<div id="wheel_picker_selected" class="wheel-picker-circle-half wheel-picker-circle-top" style="background-color: {{widgetSwitchCCT.selectedColor}};">
+											<div id="wheel_picker_selected_spin" ng-if="widgetSwitchCCT.process">
+												<i class="fas fa-spinner fa-spin"></i> {{_t('updating')}}
+											</div>
+										</div>
+										<div id="wheel_picker_preview" class="wheel-picker-circle-half wheel-picker-circle-bottom" style="background-color: {{widgetSwitchCCT.previewColor}};">
+											&nbsp;
+										</div>
+										<p>{{widgetSwitchCCT.previewColor}}</p>
+									</div>
+									<div class="col-sm-3"></div>
+								</div>
+								<div class="input-group form-block">
+									<span class="input-group-addon" id="basic-addon1">#</span>
+									<input type="text" ng-blur="colorHexChange(); setCCTColor(widgetSwitchCCT.find)" class="form-control" ng-model="widgetSwitchCCT.colorHex">
+								</div>
+								<div ng-repeat="dev in widgetSwitchCCT.all" ng-if="dev.deviceType == 'switchCCT'">
+									<div class="row form-block" ng-repeat="(k, v) in dev.metrics.color">
+										<div class="col-sm-1">
+											<span><i class="fas fa-circle fa-lg {{widgetSwitchCCT.color[k]}}"></i></span>
+										</div>
+										<div class="col-sm-11">
+											<div id="range_slider_{{$index}}"
+												 class="app-range-slider"
+												 range-slider
+												 min='0'
+												 max='255'
+												 model-max="dev.metrics.color[k]"
+												 pin-handle="min"
+												 decimal-places="0"
+												 step="0"
+												 on-handle-down="sliderOnHandleDown(dev)"
+												 on-handle-up="sliderOnHandleUpCCT(dev)">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</fieldset>						
+				</div>				
+				<div class="form form-page" 
+					ng-repeat="dev in widgetSwitchCCT.all"
+					ng-if="dev.deviceType == 'switchMultilevel' && ['switchColor_soft_white'].indexOf(dev.probeType) > -1">
+					<fieldset>
+						<div class="row">
+							<div class="col-sm-12">
+								<h3>{{_t('cct_softcold')}}</h3>
+								<div ng-repeat="dev in widgetSwitchCCT.all"
+									 ng-if="dev.deviceType == 'switchMultilevel' && ['switchColor_soft_white','switchColor_cold_white'].indexOf(dev.probeType) > -1"
+									 class="row form-block">
+									<div class="col-sm-1">
+										<span ng-if="dev.probeType == 'switchColor_soft_white'">{{_t('cct_soft')}}</span>
+										<span ng-if="dev.probeType == 'switchColor_cold_white'">{{_t('cct_cold')}}</span>
+									</div>
+									<div class="col-sm-11">
+										<div id="range_slider_{{$index}}"
+											 class="app-range-slider"
+											 range-slider
+											 min='0'
+											 max='99'
+											 model-max="dev.metrics.level"
+											 pin-handle="min"
+											 decimal-places="0"
+											 step="0"
+											 on-handle-down="sliderOnHandleDown(dev)"
+											 on-handle-up="sliderOnHandleUp(dev)">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</fieldset>					
+				</div>
+				<div class="form form-page last">
+					<fieldset class="widget-ctrl">
+						<div class="btn-group">
+					        <button class="btn btn-off" id="btn_off_{{widgetSwitchCCT.find.id}}"
+					                ng-if="getCctState(widgetSwitchCCT.find.id)"
+					                ng-class="getCctState(widgetSwitchCCT.find.id) == 'off' ? 'btn-primary': 'btn-default'"
+					                data-ng-click="runCctCmd('off', widgetSwitchCCT.find.id)"
+					                title="{{_t('lb_off')}}">
+					            <span class="widget-btn-symbol">0</span> 
+					        </button>
+					        <button class="btn btn-on" id="btn_w_{{widgetSwitchCCT.find.id}}"
+					                ng-if="getCctState(widgetSwitchCCT.find.id)"
+					                ng-class="getCctState(widgetSwitchCCT.find.id) == 'w' ? 'btn-primary': 'btn-default'"
+					                data-ng-click="runCctCmd('w', widgetSwitchCCT.find.id)"
+					                title="{{_t('lb_on')}}"><span class="widget-btn-symbol">W</span>
+					        </button>
+					        <button class="btn btn-on" id="btn_cct_{{widgetSwitchCCT.find.id}}"
+					                ng-if="getCctState(widgetSwitchCCT.find.id)"
+					                ng-class="getCctState(widgetSwitchCCT.find.id) == 'cct' ? 'btn-primary': 'btn-default'"
+					                data-ng-click="runCctCmd('cct', widgetSwitchCCT.find.id)"
+					                title="{{_t('lb_cct')}}"><span class="widget-btn-symbol">CCT</span>
+					        </button>
+					        <button class="btn btn-off" id="btn_off_{{ widgetSwitchCCT.find.id}}"
+					                ng-if="!getCctState(widgetSwitchCCT.find.id)"
+					                ng-class="widgetSwitchCCT.find.metrics.level == 'off' ? 'btn-primary': 'btn-default'"
+					                data-ng-click="runCmd(widgetSwitchCCT.find.id + '/command/off', widgetSwitchCCT.find.id)"
+					                title="{{_t('lb_off')}}">
+					            <span class="widget-btn-symbol">0</span>
+					        </button>
+					        <button class="btn btn-on" id="btn_on_{{ widgetSwitchCCT.find.id}}"
+					                ng-if="!getCctState(widgetSwitchCCT.find.id)"
+					                ng-class="v.metrics.level =='on' ? 'btn-primary': 'btn-default'"
+					                data-ng-click="runCmd(widgetSwitchCCT.find.id + '/command/on', widgetSwitchCCT.find.id)"
+					                title="{{_t('lb_on')}}">
+					            <span class="widget-btn-symbol">I</span>
+					        </button>        
+					    </div>
+					</fieldset>	
+				</div>			
+			</div>
+		</div>
+	</div>
+</div>

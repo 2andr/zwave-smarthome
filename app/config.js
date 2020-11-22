@@ -429,6 +429,8 @@ var config_data = {
 					"doorlock": []
 				}, {
 					"switchRGBW": []
+				}, {
+					"switchCCT": []
 				}]
 			},
 			'GoogleHome': {
@@ -444,6 +446,8 @@ var config_data = {
 					"thermostat": []
 				}, {
 					"switchRGBW": []
+				}, {
+					"switchCCT": []
 				}]
 			}
 		},

@@ -14,6 +14,8 @@
       <em ng-if="!d.operator && !_.isNumber(d.level) && !_.isObject(d.level)">[{{_t(d.level)}}]</em>
       <!-- SwitchRGBW -->
       <span ng-if="!d.operator && !_.isNumber(d.level) && _.isObject(d.level)" class="color-picker-show" style="background-color: {{d.level|setRgbColors}};">&nbsp;</span>
+      <!-- SwitchCCT -->
+      <span ng-if="!d.operator && !_.isNumber(d.level) && _.isObject(d.level)" class="color-picker-show" style="background-color: {{d.level|setCctColors}};">&nbsp;</span>
       &nbsp;-&nbsp;<em>{{rule.namespaces[d.deviceId].locationName}}</em>
     </span>
   </span>

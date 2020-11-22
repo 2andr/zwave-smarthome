@@ -11,6 +11,8 @@
           {{schedule.availableDevices[v.deviceId].deviceName}}
           <span ng-if="v.deviceType=='switchRGBW' && _.isObject(v.level)" class="color-picker-show" style="background-color: {{v.level|setRgbColors}};">&nbsp;</span>
           <span ng-if="v.deviceType!='switchRGBW' || !_.isObject(v.level)"><em>[{{_t(v.level)}}<em ng-if="v.level == 'lvl'">&nbsp;{{v.exact}}</em>]</em></span>
+          <span ng-if="v.deviceType=='switchCCT' && _.isObject(v.level)" class="color-picker-show" style="background-color: {{v.level|setCctColors}};">&nbsp;</span>
+          <span ng-if="v.deviceType!='switchCCT' || !_.isObject(v.level)"><em>[{{_t(v.level)}}<em ng-if="v.level == 'lvl'">&nbsp;{{v.exact}}</em>]</em></span>
           - <em>{{schedule.availableDevices[v.deviceId].locationName}}</em>
         </span>
       </button>

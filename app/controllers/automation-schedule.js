@@ -227,6 +227,18 @@ myAppController.controller('AutomationScheduleIdController', function($scope, $r
 					reverseLevel: null
 				}
 			},
+			switchCCT: {
+				level: ['on', 'off'],
+				min: 0,
+				max: 255,
+				default: {
+					deviceId: '',
+					deviceType: 'switchCCT',
+					level: 'on',
+					sendAction: false,
+					reverseLevel: null
+				}
+			},
 			thermostat: {
 				min: 0,
 				max: 99,

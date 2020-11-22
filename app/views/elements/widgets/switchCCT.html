@@ -1,0 +1,42 @@
+<!-- switchCCT -->
+<div class="widget-ctrl ctrl-left">
+    <div class="btn-group">
+        <button class="btn btn-off" id="btn_off_{{v.id}}"
+        ng-if="getCctState(v.id)"
+        ng-class="getCctState(v.id) == 'off' ? 'btn-primary': 'btn-default'"
+        data-ng-click="runCctCmd('off', v.id)"
+        title="{{_t('lb_off')}}">
+        <span class="widget-btn-symbol">0</span>
+        </button>
+        <button class="btn btn-on" id="btn_w_{{v.id}}"
+        ng-if="getCctState(v.id)"
+        ng-class="getCctState(v.id) == 'w' ? 'btn-primary': 'btn-default'"
+        data-ng-click="runCctCmd('w', v.id)"
+        title="{{_t('lb_on')}}"><span class="widget-btn-symbol">W</span>
+        </button>
+        <button class="btn btn-on" id="btn_cct_{{v.id}}"
+        ng-if="getCctState(v.id)"
+        ng-class="getCctState(v.id) == 'cct' ? 'btn-primary': 'btn-default'"
+        data-ng-click="runCctCmd('cct', v.id)"
+        title="{{_t('lb_cct')}}"><span class="widget-btn-symbol">CCT</span>
+        </button>
+        <button class="btn btn-off" id="btn_off_{{ v.id}}"
+        ng-if="!getCctState(v.id)"
+        ng-class="v.metrics.level == 'off' ? 'btn-primary': 'btn-default'"
+        data-ng-click="runCmd(v.id + '/command/off', v.id)"
+        title="{{_t('lb_off')}}">
+        <span class="widget-btn-symbol">0</span>
+        </button>
+        <button class="btn btn-on" id="btn_on_{{ v.id}}"
+        ng-if="!getCctState(v.id)"
+        ng-class="v.metrics.level =='on' ? 'btn-primary': 'btn-default'"
+        data-ng-click="runCmd(v.id + '/command/on', v.id)"
+        title="{{_t('lb_on')}}">
+        <span class="widget-btn-symbol">I</span>
+        </button>
+    </div>
+</div>
+<div class="widget-ctrl ctrl-right widget-ctrl-click" ng-click="dataHolder.devices.find = v;handleModal('switchCCTWModal', $event)">
+    <span><i class="fas fa-caret-down" title="{{_t('lb_settings')}}"></i></span>
+    <span class="color-picker-show" style="background-color: {{v.metrics.color|setCctColors}};">&nbsp;</span>
+</div>

@@ -18,6 +18,7 @@
     <img class="navi-img" ng-src="{{rule.namespaces[d.deviceId].iconPath}}" err-src="{{cfg.img.placeholder}}" alt="img" />
     {{rule.namespaces[d.deviceId].deviceName}}&nbsp;
     <span class="color-picker-show" style="background-color: {{d.level|setRgbColors}};">&nbsp;</span>&nbsp;-&nbsp;
+    <span class="color-picker-show" style="background-color: {{d.level|setCctColors}};">&nbsp;</span>&nbsp;-&nbsp;
     <em>{{rule.namespaces[d.deviceId].locationName}}</em>
   </span>
   </button>

@@ -877,6 +877,7 @@
     "switchControl": "Switch",
     "switchMultilevel": "Dimmer\/Motor Control",
     "switchRGBW": "RGBW switch",
+    "switchCCT": "CCT switch",
     "system_rebooting": "Rebooting system...",
     "take_me_home": "Take me back to dashboard",
     "teachin_canceled": "The Teach-In process has been cancelled.",

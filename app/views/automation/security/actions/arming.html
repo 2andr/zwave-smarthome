@@ -34,6 +34,8 @@
           {{d.deviceName}}&nbsp;
           <span ng-if="d.deviceType=='switchRGBW' && _.isObject(d.level)" class="color-picker-show" style="background-color: {{d.level|setRgbColors}};">&nbsp;</span>
           <span ng-if="d.deviceType!='switchRGBW' || !_.isObject(d.level)"><em>[{{_t(d.level)}}<em ng-if="d.level == 'lvl'">&nbsp;{{d.exact}}</em>]</em></span>&nbsp;
+          <span ng-if="d.deviceType=='switchCCT' && _.isObject(d.level)" class="color-picker-show" style="background-color: {{d.level|setCctColors}};">&nbsp;</span>
+          <span ng-if="d.deviceType!='switchCCT' || !_.isObject(d.level)"><em>[{{_t(d.level)}}<em ng-if="d.level == 'lvl'">&nbsp;{{d.exact}}</em>]</em></span>&nbsp;
           -&nbsp;<em>{{d.locationName}}</em>
         </span>
         </button>

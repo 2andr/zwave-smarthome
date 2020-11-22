@@ -534,6 +534,14 @@ myAppController.controller('ElementSwitchRGBWController', function($scope, dataF
 	};
 
 	/**
+	 * Calls function when slider handle for RGB is released
+	 */
+	$scope.sliderOnHandleUpCCT = function(input) {
+		$scope.setCCTColor(input);
+		$interval.cancel(sliderInterval);
+	};
+
+	/**
 	 * Calls function when slider handle is released
 	 */
 	$scope.sliderOnHandleUp = function(input) {
@@ -655,6 +663,270 @@ myAppController.controller('ElementSwitchRGBWController', function($scope, dataF
 
 	function rgbToHex(r, g, b) {
 		return "#" + ((1 << 24) + (parseInt(r, 10) << 16) + (parseInt(g, 10) << 8) + parseInt(b, 10)).toString(16).slice(1);
+	}
+
+});
+
+/**
+ * The controller that handles SwitchCCT element.
+ * @class ElementSwitchCCTController
+ * cw - CoolWhite <= 3000K
+ * sw - SoftWhite  => 5000k
+ */
+myAppController.controller('ElementSwitchCCTController', function($scope, dataFactory, $interval, cfg) {
+	$scope.widgetSwitchCCT = {
+		find: {},
+		all: [],
+		alert: {
+			message: false,
+			status: 'is-hidden',
+			icon: false
+		},
+		process: false,
+		previewColor: 'cct(255, 255)',
+		selectedColor: 'cct(255, 255)',
+		colorHex: '',
+		minMax: {
+			max: 99,
+			min: 0,
+			step: 1
+		},
+		color: {
+			cw: 'text-danger',
+			sw: 'text-success',
+		},
+		sliderInterval: null
+	};
+
+	$scope.knobopt = {
+		width: 160
+	};
+
+	/**
+	 * Show CCT modal window
+	 */
+	$scope.loadCctWheel = function(input) {
+		$scope.input = input;
+		var bCanPreview = true; // can preview
+
+		// create canvas and context objects
+		var canvas = document.getElementById('wheel_picker');
+
+		var ctx = canvas.getContext('2d');
+		// drawing active image
+		var image = new Image();
+		image.onload = function() {
+			ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height); // draw the image on the canvas
+		};
+		image.src = 'app/img/cctwheel.png';
+
+		var defaultColor = "cct(" + input.metrics.color.cw + ", " + input.metrics.color.sw + ")";
+		//$('#wheel_picker_preview').css('backgroundColor', defaultColor);
+		$scope.widgetSwitchCCT.selectedColor = defaultColor;
+		$scope.widgetSwitchCCT.previewColor = defaultColor;
+		$('#wheel_picker').mousemove(function(e) { // mouse move handler
+			if (bCanPreview) {
+				// get coordinates of current position
+				var canvasOffset = $(canvas).offset();
+				var canvasX = Math.floor(e.pageX - canvasOffset.left);
+				var canvasY = Math.floor(e.pageY - canvasOffset.top);
+
+				// get current pixel
+				var imageData = ctx.getImageData(canvasX, canvasY, 1, 1);
+				var pixel = imageData.data;
+
+				updatePreviewColor(pixel[0], pixel[1]);
+
+				// update controls
+				$('#cwVal').val('CW: ' + pixel[0]);
+				$('#swVal').val('SW: ' + pixel[1]);
+				$('#cctVal').val(pixel[0] + ',' + pixel[1]);
+			}
+		});
+
+		$('#wheel_picker').click(function(e) { // click event handler
+			// bCanPreview = true;//!bCanPreview;
+			if (bCanPreview) {
+				var cmdColor = $('#cctVal').val().split(',');
+				var cmd = input.id + '/command/exact?cw=' + cmdColor[0] + '&sw=' + cmdColor[1] + '';
+				var cctColors = 'cct(' + cmdColor[0] + ',' + cmdColor[1] + ')';
+				var cctColorsObj = {
+					cw: cmdColor[0],
+					sw: cmdColor[1]
+				};
+				$scope.widgetSwitchCCT.process = true;
+				dataFactory.runApiCmd(cmd).then(function(response) {
+					var findIndex = _.findIndex($scope.dataHolder.devices.collection, {
+						id: input.id
+					});
+					//angular.extend($scope.dataHolder.devices.collection[findIndex ].metrics,{cctColors: cctColors});
+					angular.extend($scope.dataHolder.devices.collection[findIndex].metrics.color, cctColorsObj);
+					angular.extend(input.metrics.color, cctColorsObj);
+					$scope.widgetSwitchCCT.colorHex = cctToHex(cctColorsObj.cw, cctColorsObj.sw);
+					$scope.widgetSwitchCCT.process = false;
+					$scope.widgetSwitchCCT.selectedColor = cctColors;
+				}, function(error) {
+					$scope.widgetSwitchCCT.process = false;
+					$scope.widgetSwitchCCT.alert = {
+						message: $scope._t('error_update_data'),
+						status: 'alert-danger',
+						icon: 'fa-exclamation-triangle'
+					};
+				});
+			}
+		});
+	};
+
+	$scope.colorHexChange = function(input) {
+		var colorHex = $scope.widgetSwitchCCT.colorHex;
+		if (typeof colorHex !== 'undefined' && colorHex.lenght > 0) {
+			var cct = hexToCct(colorHex);
+			$scope.widgetSwitchCCT.find.metrics.color = cct;
+			updatePreviewColor(cct.cw, cct.sw);
+		}
+	};
+
+	/**
+	 * Calls function when slider handle is grabbed
+	 */
+	$scope.sliderOnHandleDown = function(input) {
+		sliderInterval = $interval(function() {
+			if (typeof input.metrics.color !== 'undefined') {
+				updatePreviewColor(input.metrics.color.cw, input.metrics.color.sw);
+			}
+		}, 500);
+	};
+
+
+	/**
+	 * Calls function when slider handle for RGB is released
+	 */
+	$scope.sliderOnHandleUpCCT = function(input) {
+		$scope.setCCTColor(input);
+		$interval.cancel(sliderInterval);
+	};
+
+	/**
+	 * Calls function when slider handle is released
+	 */
+	$scope.sliderOnHandleUp = function(input) {
+		var val = parseFloat(input.metrics.level);
+
+		var cmd = input.id + '/command/exact?level=' + val;
+		input.metrics.level = val;
+
+		$scope.runCmd(cmd);
+	};
+
+	/**
+	 * Load single device
+	 */
+	$scope.loadDeviceId = function() {
+		var device = _.where($scope.dataHolder.devices.all, {
+			id: $scope.dataHolder.devices.find.id
+		});
+		if (_.isEmpty(device)) {
+			$scope.widgetSwitchCCT.alert = {
+				message: $scope._t('error_load_data'),
+				status: 'alert-danger',
+				icon: 'fa-exclamation-triangle'
+			};
+			return;
+		}
+		angular.extend($scope.widgetSwitchCCT.find, device[0]);
+		var str = "ZWayVDev_zway";
+		if ($scope.widgetSwitchCCT.find.id.substr(0, str.length) !== str || $scope.elementAccess([2, 3, 4])) { //TODO next release change
+			var color = $scope.widgetSwitchCCT.find.metrics.color;
+			$scope.widgetSwitchCCT.colorHex = cctToHex(color.cw, color.sw);
+			$scope.loadCctWheel($scope.widgetSwitchCCT.find);
+		} else {
+			var automationId = $scope.widgetSwitchCCT.find.id.substr(0, $scope.widgetSwitchCCT.find.id.indexOf('-'));
+			var zwayId = automationId.substr(automationId.lastIndexOf('_') + 1);
+			dataFactory.runExpertCmd('devices[' + zwayId + ']').then(function(response) {
+				if (typeof $scope.cfg.cct_blacklist[response.data.data.manufacturerId.value] !== 'undefined' &&
+					$scope.cfg.cct_blacklist[response.data.data.manufacturerId.value].indexOf(response.data.data.manufacturerProductId.value) > -1) {
+					var color = $scope.widgetSwitchCCT.find.metrics.color;
+					$scope.widgetSwitchCCT.colorHex = cctToHex(color.cw, color.sw);
+					$scope.loadCctWheel($scope.widgetSwitchCCT.find);
+				} else {
+					dataFactory.getApi('devices', '', true).then(function(response) {
+						var devices = response.data.data;
+
+						var devs = _.filter(devices.devices, function(dev) {
+							if (dev.id.indexOf(automationId) > -1) {
+								return dev;
+							}
+						});
+
+						$scope.widgetSwitchCCT.all = devs;
+						var find = _.find($scope.widgetSwitchCCT.all, function(dev) {
+							return dev.deviceType == 'SwitchCCT';
+						});
+
+						var color = find.metrics.color;
+						$scope.widgetSwitchCCT.colorHex = cctToHex(color.cw, color.sw);
+						$scope.loadCctWheel(find);
+						return;
+					}, function(error) {
+						console.log(error);
+					});
+				}
+			}, function(error) {
+				$scope.widgetSwitchCCT.alert = {
+					message: $scope._t('error_load_data'),
+					status: 'alert-danger',
+					icon: 'fa-exclamation-triangle'
+				};
+			});
+		}
+	};
+	$scope.loadDeviceId();
+
+	$scope.setCCTColor = function(input) {
+		var cmd = input.id + '/command/exact?cw=' + input.metrics.color.r + '&sw=' + input.metrics.color.g + '',
+			cctColors = 'cct(' + input.metrics.color.cw + ',' + input.metrics.color.sw + ')',
+			cctColorsObj = input.metrics.color;
+
+		$scope.widgetSwitchCCT.process = true;
+		dataFactory.runApiCmd(cmd).then(function(response) {
+			var findIndex = _.findIndex($scope.dataHolder.devices.collection, {
+				id: input.id
+			});
+			//angular.extend($scope.dataHolder.devices.collection[findIndex ].metrics,{cctColors: cctColors});
+			angular.extend($scope.dataHolder.devices.collection[findIndex].metrics.color, cctColorsObj);
+			angular.extend($scope.widgetSwitchCCT.find.metrics.color, cctColorsObj);
+			$scope.widgetSwitchCCT.colorHex = cctToHex(input.metrics.color.cw, input.metrics.color.sw);
+			$scope.widgetSwitchCCT.process = false;
+			$scope.widgetSwitchCCT.selectedColor = cctColors;
+		}, function(error) {
+			$scope.widgetSwitchCCT.process = false;
+			$scope.widgetSwitchCCT.alert = {
+				message: $scope._t('error_update_data'),
+				status: 'alert-danger',
+				icon: 'fa-exclamation-triangle'
+			};
+		});
+	}
+
+	/// --- Private functions --- ///
+
+	function updatePreviewColor(cw, sw) {
+		// update preview color
+		var pixelColor = "cct(" + cw + ", " + sw + ")";
+		pixelColor = (pixelColor == 'cct(0, 0)' ? $scope.widgetSwitchCCT.selectedColor : pixelColor);
+		$scope.widgetSwitchCCT.previewColor = pixelColor;
+	}
+
+	function hexToCct(hex) {
+		var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+		return result ? {
+			cw: parseInt(result[1], 16),
+			sw: parseInt(result[2], 16)
+		} : null;
+	}
+
+	function cctToHex(cw, sw) {
+		return "#" + ((parseInt(cw, 10) << 8) + parseInt(sw, 10)).toString(16).slice(1);
 	}
 
 });

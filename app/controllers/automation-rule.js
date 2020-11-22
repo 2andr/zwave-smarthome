@@ -297,6 +297,18 @@ myAppController.controller('AutomationRuleIdController', function($scope, $route
 					reverseLevel: null
 				}
 			},
+			switchCCT: {
+				level: ['on', 'off'],
+				min: 0,
+				max: 255,
+				default: {
+					deviceId: '',
+					deviceType: 'switchCCT',
+					level: 'on',
+					sendAction: false,
+					reverseLevel: null
+				}
+			},
 			switchControl: {
 				level: ['on', 'off', 'upstart', 'upstop', 'downstart', 'downstop'],
 				default: {
@@ -412,7 +424,7 @@ myAppController.controller('AutomationRuleIdController', function($scope, $route
 			devices: []
 		},
 		target: {
-			deviceTypes: ['doorlock', 'switchBinary', 'switchMultilevel', 'thermostat', 'switchRGBW', 'switchControl', 'toggleButton', 'notification'],
+			deviceTypes: ['doorlock', 'switchBinary', 'switchMultilevel', 'thermostat', 'switchRGBW', 'switchCCT', 'switchControl', 'toggleButton', 'notification'],
 			devicesInRoom: [],
 			availableDevices: [],
 			assignedDevices: [],
@@ -433,7 +445,7 @@ myAppController.controller('AutomationRuleIdController', function($scope, $route
 				devicesInRoom: [],
 				availableDevices: [],
 				assignedDevices: [],
-				types: ['switchBinary', 'sensorBinary', 'doorlock', 'switchRGBW', 'switchControl', 'sensorDiscrete', 'sensorMultilevel', 'switchMultilevel', 'thermostat', 'toggleButton', 'time', 'nested']
+				types: ['switchBinary', 'sensorBinary', 'doorlock', 'switchRGBW', 'switchCCT', 'switchControl', 'sensorDiscrete', 'sensorMultilevel', 'switchMultilevel', 'thermostat', 'toggleButton', 'time', 'nested']
 			}
 
 			/*  cfg: {

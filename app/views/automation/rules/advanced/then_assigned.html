@@ -19,6 +19,11 @@
     <span  class="color-picker-show" style="background-color: {{d.level|setRgbColors}};">&nbsp;</span>&nbsp;-&nbsp;
     <em>{{rule.namespaces[d.deviceId].locationName}}</em>
   </span>
+  <!-- SwitchCCT -->
+  <span ng-if="rule.namespaces[d.deviceId].deviceName && _.isObject(d.level)">{{rule.namespaces[d.deviceId].deviceName}}&nbsp;
+    <span  class="color-picker-show" style="background-color: {{d.level|setCctColors}};">&nbsp;</span>&nbsp;-&nbsp;
+    <em>{{rule.namespaces[d.deviceId].locationName}}</em>
+  </span>
   </button>
   <!-- NO Toggle -->
   <span class="no-toggle" ng-if="d.deviceType == 'toggleButton'" ng-hide="!rule.namespaces[d.deviceId]">

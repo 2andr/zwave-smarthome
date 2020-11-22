@@ -11,6 +11,8 @@
 					{{scene.availableDevices[v.deviceId].deviceName}}&nbsp;
 					<span ng-if="v.deviceType=='switchRGBW' && _.isObject(v.level)" class="color-picker-show" style="background-color: {{v.level|setRgbColors}};">&nbsp;</span>
 					<span ng-if="v.deviceType!='switchRGBW' || !_.isObject(v.level)"><em>[{{_t(v.level)}}<em ng-if="v.level == 'lvl'">&nbsp;{{v.exact}}</em>]</em></span>&nbsp;
+					<span ng-if="v.deviceType=='switchCCT' && _.isObject(v.level)" class="color-picker-show" style="background-color: {{v.level|setCctColors}};">&nbsp;</span>
+					<span ng-if="v.deviceType!='switchCCT' || !_.isObject(v.level)"><em>[{{_t(v.level)}}<em ng-if="v.level == 'lvl'">&nbsp;{{v.exact}}</em>]</em></span>&nbsp;
 					-&nbsp;<em>{{scene.availableDevices[v.deviceId].locationName}}</em>
 				</span>
 			</button>

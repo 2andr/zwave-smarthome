@@ -407,6 +407,8 @@ var config_data = {
 			'switchColor_red',
 			'switchColor_green',
 			'switchColor_blue'
+			'switchColor_cw',
+			'switchColor_sw',
 		],
 		// RGB Blacklist
 		// vendor ID -> product ID

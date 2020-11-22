@@ -129,7 +129,7 @@ myAppController.controller('HazardNotificationIdController', function($scope, $r
 		tab: 'fire',
 		hazardsTypes: ['fire', 'leakage'],
 		sensors: ['smoke', 'alarm_smoke', 'alarmSensor_smoke', 'flood', 'alarm_flood', 'alarmSensor_flood', 'general_purpose'],
-		devices: ['switchBinary', 'switchMultilevel', 'switchRGBW', 'toggleButton'],
+		devices: ['switchBinary', 'switchMultilevel', 'switchRGBW', 'toggleButton', 'switchCCT'],
 		interval: [60, 120, 300, 600, 900, 1800, 3600],
 		firedOn: ['on', 'off', 'alarm', 'revert'],
 		sensorTyp: "",
@@ -164,6 +164,18 @@ myAppController.controller('HazardNotificationIdController', function($scope, $r
 			  default: {
 			    deviceId: '',
 			    deviceType: 'switchRGBW',
+			    level: 'on',
+			    sendAction: false,
+			    reverseLevel: null
+			  }
+			},
+			switchCCT: {
+			  level: ['on', 'off'],
+			  min: 0,
+			  max: 255,
+			  default: {
+			    deviceId: '',
+			    deviceType: 'switchCCT',
 			    level: 'on',
 			    sendAction: false,
 			    reverseLevel: null

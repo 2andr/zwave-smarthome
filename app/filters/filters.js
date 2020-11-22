@@ -441,6 +441,7 @@ myApp.filter('getElCategoryIcon', function () {
             text: 'fa-file-alt',
             camera: 'fa-video',
             switchRGBW: 'fa-star-half',
+            switchCCT: 'fa-star-half',
             switchControl: 'fa-toggle-off',
             switchBinary: 'fa-toggle-on',
             sensorMultiline: 'fa-list-ul',
@@ -852,11 +853,22 @@ myApp.filter('setConfigValue', function () {
 
 /**
  * Set rgb colors
- * @function etRgbColors
+ * @function setRgbColors
  */
 myApp.filter('setRgbColors', function () {
     return function (color) {
         return 'rgb('+ color.r +',' + color.g  + ',' + color.b  +')';
+
+    };
+});
+
+/**
+ * Set cct colors
+ * @function setCctColors
+ */
+myApp.filter('setCctColors', function () {
+    return function (color) {
+        return 'cct('+ color.cw +',' + color.sw  +')';
 
     };
 });

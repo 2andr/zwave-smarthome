@@ -531,6 +531,89 @@ myAppController.controller('ElementBaseController', function($scope, $q, $interv
     };
 
     /**
+     * get CCT state
+     */
+    $scope.getCctState = function(cctId) {
+        var baseId = cctId.substr(0, cctId.indexOf('-')),
+            rgbIndex = _.findIndex($scope.dataHolder.devices.all, {
+                id: cctId
+            }),
+            dimmerIndex = _.findIndex($scope.dataHolder.devices.all, {
+                id: baseId + '-0-38'
+            }),
+            softIndex = _.findIndex($scope.dataHolder.devices.all, {
+                id: baseId + '-0-51-0'
+            }),
+            coldIndex = _.findIndex($scope.dataHolder.devices.all, {
+                id: baseId + '-0-51-1'
+            });
+
+        if (softIndex < 0 || coldIndex < 0)
+            return false;
+
+        if ($scope.dataHolder.devices.all[dimmerIndex] && $scope.dataHolder.devices.all[dimmerIndex].metrics && $scope.dataHolder.devices.all[dimmerIndex].metrics.level && $scope.dataHolder.devices.all[dimmerIndex].metrics.level != 'off') {
+            if (($scope.dataHolder.devices.all[softIndex] && $scope.dataHolder.devices.all[softIndex].metrics && $scope.dataHolder.devices.all[softIndex].metrics.level && $scope.dataHolder.devices.all[softIndex].metrics.level != 'off') ||
+                ($scope.dataHolder.devices.all[coldIndex] && $scope.dataHolder.devices.all[coldIndex].metrics && $scope.dataHolder.devices.all[coldIndex].metrics.level && $scope.dataHolder.devices.all[coldIndex].metrics.level != 'off')) {
+                return 'w';
+            } else {
+                return 'cct';
+            }
+        } else {
+            return 'off';
+        }
+    };
+
+
+    /**
+     * set CCT state
+     */
+    $scope.runCctCmd = function(cmd, cctId) {
+        var baseId = cctId.substr(0, cctId.indexOf('-'))
+        dimmerId = baseId + '-0-38',
+            softId = baseId + '-0-51-0',
+            coldId = baseId + '-0-51-1',
+            softIndex = _.findIndex($scope.dataHolder.devices.all, {
+                id: softId
+            }),
+            coldIndex = _.findIndex($scope.dataHolder.devices.all, {
+                id: coldId
+            });
+
+        switch (cmd) {
+            case 'off':
+                //perform off for dimmer
+                $scope.runCmd(dimmerId + '/command/off', dimmerId);
+                break;
+            case 'rgb':
+                // perform off for soft&cold if
+                $scope.runCmd(softId + '/command/off', softId);
+                $scope.runCmd(coldId + '/command/off', coldId);
+
+                // run on cmd for dimmer & rgb
+                $scope.runCmd(cctId + '/command/on', cctId);
+                $scope.runCmd(dimmerId + '/command/on', dimmerId);
+                break;
+            case 'w':
+                // perform off for rgb and on for soft&warm and dimmer
+                $scope.runCmd(cctId + '/command/off', cctId);
+
+                oldSoft = typeof $scope.dataHolder.devices.all[softIndex].metrics.oldLevel !== 'undefined' ? $scope.dataHolder.devices.all[softIndex].metrics.oldLevel : 99;
+                oldCold = typeof $scope.dataHolder.devices.all[coldIndex].metrics.oldLevel !== 'undefined' ? $scope.dataHolder.devices.all[coldIndex].metrics.oldLevel : 99;
+
+                if (!oldSoft && !oldCold) {
+                    oldSoft = 99;
+                    oldCold = 99;
+                }
+                // perform on
+                $scope.runCmd(softId + '/command/exact?level=' + oldSoft, softId);
+                $scope.runCmd(coldId + '/command/exact?level=' + oldCold, coldId);
+                $scope.runCmd(dimmerId + '/command/on', dimmerId);
+                break;
+        }
+        return;
+    };
+
+    /**
      * Reset devicse data holder
      */
     $scope.resetDevices = function(devices) {

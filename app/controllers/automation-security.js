@@ -77,6 +77,10 @@ myAppController.controller('SecurityIdController', function($scope, $routeParams
 					min: 0,
 					max: 255
 				},
+				switchCCT: {
+					min: 0,
+					max: 255
+				},
 				thermostat: {
 					min: 0,
 					max: 99
