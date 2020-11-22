@@ -799,7 +799,7 @@ myAppController.controller('ElementSwitchCCTController', function($scope, dataFa
 
 
 	/**
-	 * Calls function when slider handle for RGB is released
+	 * Calls function when slider handle for CCT is released
 	 */
 	$scope.sliderOnHandleUpCCT = function(input) {
 		$scope.setCCTColor(input);
